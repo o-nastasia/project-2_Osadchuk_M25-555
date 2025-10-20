@@ -1,6 +1,6 @@
 [project]
 name = "src"
-version = "0.1.0"
+version = "0.2.0"
 description = ""
 authors = [
     {name = "Anastasiya Osadchuk",email = "diamondtheb@yandex.ru"}
@@ -8,6 +8,7 @@ authors = [
 readme = "README.md"
 requires-python = ">=3.13"
 dependencies = [
+    "prompt (>=0.4.1,<0.5.0)"
 ]
 
  packages = [
@@ -17,6 +18,20 @@ dependencies = [
 [tool.poetry.scripts]
 project = "src.primitive_db.main:main"
 
+[tool.ruff]
+line-length = 88
+target-version = "py312"
+exclude = ["venv", ".venv", "dist", "__pycache__"]
+
+[tool.ruff.lint]
+select = ["E", "F", "I"]
+ignore = []
+
 [build-system]
 requires = ["poetry-core>=2.0.0,<3.0.0"]
 build-backend = "poetry.core.masonry.api"
+
+[dependency-groups]
+dev = [
+    "ruff (>=0.14.1,<0.15.0)"
+]
