@@ -1,8 +1,11 @@
 #!/usr/bin/env python3
-from .engine import welcome
+from .engine import print_help, run
+
 
 def main():
-    command = welcome()
+    print_help()
+    run()
+
 
 if __name__ == '__main__':
     main()
