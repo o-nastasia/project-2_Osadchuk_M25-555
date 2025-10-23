@@ -5,9 +5,11 @@ import prompt
 from prettytable import PrettyTable
 
 from .core import create_table, delete, drop_table, insert, select, update
+from .decorators import create_cacher
 from .parsers import meta_parser, parser, values_parser
 from .utils import load_data, load_metadata, save_data, save_metadata
 
+META_FILE = "db_meta.json"
 
 def print_help():
     """Prints the help message for the current mode."""
@@ -32,7 +34,8 @@ def print_help():
     print("<command> help - справочная информация\n")
 
 def run():
-    filepath = 'db_meta.json'
+    filepath = META_FILE
+    cacher, clear_cache = create_cacher()
     while True:
         data = load_metadata(filepath)
         user_input = prompt.string('Введите команду: ')
@@ -80,6 +83,7 @@ def run():
                 if result == 1:
                     continue
                 save_data(table_name, result)
+                clear_cache(table_name)
             case 'update':
                 if len(args) != 10 or args[2] != 'set' or args[4] != '=' \
                     or args[6] != 'where' or args[8] != '=':
@@ -96,6 +100,7 @@ def run():
                 if result == 1:
                     continue
                 save_data(table_name, result)
+                clear_cache(table_name)
             case 'delete_from':
                 if len(args) != 6 or args[2] != 'where' or args[4] != '=':
                     print('Некорректное значение функции. Попробуйте снова.')
@@ -109,6 +114,7 @@ def run():
                 if result == 1:
                     continue
                 save_data(table_name, result)
+                clear_cache(table_name)
             case 'select_from':
                 if len(args) == 6 and args[2] == 'where' and args[4] == '=':
                     table_name = args[1]
@@ -119,7 +125,9 @@ def run():
                     condition = parser(args[3], args[5], data, table_name)
                     if condition == 1:
                         continue
-                    rows = select(table_data, condition)
+
+                    cache_key = f"{table_name}:{args[3]}={args[5]}"
+                    rows = cacher(cache_key, lambda: select(table_data, condition))
                     if rows == 1:
                         continue
                     table = PrettyTable()
@@ -138,10 +146,16 @@ def run():
                         table = PrettyTable(columns)
                         print(table)
                     
+                    cache_key = f"{table_name}:all"
+                    rows = cacher(cache_key, lambda: select(table_data))
                     table = PrettyTable()
                     table.field_names = table_data[0].keys()
+                    """
                     for row in table_data:
                         table.add_row(list(row.values()))
+                    """
+                    for row in rows:
+                            table.add_row(list(row.values()))
                     print(table)
 
                 else:

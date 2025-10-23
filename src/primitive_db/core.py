@@ -1,7 +1,9 @@
 #!/usr/bin/env python3
+from .decorators import confirm_action, handle_db_errors, log_time
 from .utils import load_data
 
 
+@handle_db_errors
 def create_table(metadata, table_name, columns):
     data = metadata.copy()
     if table_name in data:
@@ -32,6 +34,8 @@ def create_table(metadata, table_name, columns):
     print(f'Таблица "{table_name}" успешно создана со столбцами: {", ".join(columns)}')
     return data
 
+@handle_db_errors
+@confirm_action("удаление таблицы")
 def drop_table(metadata, table_name):
     data = metadata.copy()
     if table_name not in data:
@@ -42,6 +46,8 @@ def drop_table(metadata, table_name):
     print(f'Таблица "{table_name}" успешно удалена.')
     return data
 
+@handle_db_errors
+@log_time
 def insert(metadata, table_name, values):
     data = metadata.copy()
     if table_name not in data:
@@ -92,6 +98,8 @@ def insert(metadata, table_name, values):
     print(f'Запись с ID={id} успешно добавлена в таблицу "{table_name}".')
     return new_table_data
 
+@handle_db_errors
+@log_time
 def select(table_data, where_clause=None):
     if not where_clause:
         return table_data
@@ -103,7 +111,7 @@ def select(table_data, where_clause=None):
         return 1
 
     elif column not in table_data[0]:
-        print(f"Ошибка: Столбец '{column}' не существует в таблице.")
+        print(f"Ошибка: Столбец {column} не существует в таблице.")
         return 1
 
     output = []
@@ -115,6 +123,7 @@ def select(table_data, where_clause=None):
         return 1
     return output
 
+@handle_db_errors
 def update(table_data, set_clause, where_clause, table_name):
     if not where_clause:
         print("Ошибка: Не указано условие where.")
@@ -156,6 +165,8 @@ def update(table_data, set_clause, where_clause, table_name):
 
     return output
 
+@handle_db_errors
+@confirm_action("удаление записи")
 def delete(table_data, where_clause, table_name):
     if not where_clause:
         print("Ошибка: Не указано условие where.")
