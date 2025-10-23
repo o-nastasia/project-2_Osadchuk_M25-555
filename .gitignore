@@ -7,3 +7,4 @@ dist/
 demo.cast
 .ruff_cache/
 *.json
+data/
