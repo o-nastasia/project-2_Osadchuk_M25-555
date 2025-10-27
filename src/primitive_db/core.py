@@ -5,6 +5,7 @@ from .utils import load_data
 
 @handle_db_errors
 def create_table(metadata, table_name, columns):
+    """Создает новую таблицу с указанными столбцами."""
     data = metadata.copy()
     if table_name in data:
         print(f'Ошибка: Таблица "{table_name}" уже существует.')
@@ -37,6 +38,7 @@ def create_table(metadata, table_name, columns):
 @handle_db_errors
 @confirm_action("удаление таблицы")
 def drop_table(metadata, table_name):
+    """Удаляет таблицу из метаданных."""
     data = metadata.copy()
     if table_name not in data:
         print(f'Ошибка: Таблица "{table_name}" не существует.')
@@ -49,6 +51,7 @@ def drop_table(metadata, table_name):
 @handle_db_errors
 @log_time
 def insert(metadata, table_name, values):
+    """Вставляет новую запись в таблицу."""
     data = metadata.copy()
     if table_name not in data:
         print(f'Ошибка: Таблица "{table_name}" не существует.')
@@ -101,6 +104,7 @@ def insert(metadata, table_name, values):
 @handle_db_errors
 @log_time
 def select(table_data, where_clause=None):
+    """Выбирает записи из таблицы по условию."""
     if not where_clause:
         return table_data
     column = list(where_clause.keys())[0]
@@ -125,6 +129,7 @@ def select(table_data, where_clause=None):
 
 @handle_db_errors
 def update(table_data, set_clause, where_clause, table_name):
+    """Обновляет записи в таблице по условию."""
     if not where_clause:
         print("Ошибка: Не указано условие where.")
         return 1
@@ -168,6 +173,7 @@ def update(table_data, set_clause, where_clause, table_name):
 @handle_db_errors
 @confirm_action("удаление записи")
 def delete(table_data, where_clause, table_name):
+    """Удаляет записи из таблицы по условию."""
     if not where_clause:
         print("Ошибка: Не указано условие where.")
         return 1

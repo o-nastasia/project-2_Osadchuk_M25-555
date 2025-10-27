@@ -1,4 +1,5 @@
 def parser(column, condition, metadata, table_name):
+    """Парсит условие для столбца и проверяет его тип."""
     data = metadata.copy()
     if table_name not in data:
         print(f'Ошибка: Таблица "{table_name}" не существует.')
@@ -28,6 +29,7 @@ def parser(column, condition, metadata, table_name):
     return output
 
 def values_parser(values):
+    """Парсит значения для вставки в таблицу."""
     if not values:
         print("Ошибка: укажите значения столбцов")
         return 1
@@ -51,6 +53,7 @@ def values_parser(values):
     return result
 
 def meta_parser(metadata, table_name):
+    """Извлекает имена столбцов из метаданных таблицы."""
     if table_name not in metadata:
         print(f'Ошибка: Таблица "{table_name}" не существует.')
         return 1

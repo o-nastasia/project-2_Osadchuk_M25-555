@@ -12,7 +12,7 @@ from .utils import load_data, load_metadata, save_data, save_metadata
 META_FILE = "db_meta.json"
 
 def print_help():
-    """Prints the help message for the current mode."""
+    """Выводит справочное сообщение о доступных командах."""
    
     print("\n***Процесс работы с таблицей***")
     print("Функции:")
@@ -34,6 +34,7 @@ def print_help():
     print("<command> help - справочная информация\n")
 
 def run():
+    """Запускает основной цикл обработки команд для работы с базой данных."""
     filepath = META_FILE
     cacher, clear_cache = create_cacher()
     while True:
@@ -45,6 +46,7 @@ def run():
         command = args[0]
         match command:
             case 'create_table':
+                """Создает новую таблицу с указанными столбцами."""
                 if len(args) < 3:
                     print('Некорректное значение: отсутствуют названия таблицы или столбцов. Попробуйте снова.')#noqa: E501
                     continue
@@ -55,11 +57,13 @@ def run():
                     continue
                 save_metadata(filepath, table)
             case 'list_tables':
+                """Выводит список всех таблиц."""
                 if data == {}:
                     print("У вас пока нет таблиц.")
                     continue
                 print('\n'.join(f'- {name}' for name in data))
             case 'drop_table':
+                """Удаляет указанную таблицу."""
                 if len(args) != 2:
                     print('Некорректное значение: отсутствует \
                           название таблицы. Попробуйте снова.')
@@ -70,6 +74,7 @@ def run():
                     continue
                 save_metadata(filepath, result)
             case 'insert_into':
+                """Вставляет новую запись в таблицу."""
                 if len(args) < 4 or args[2] != 'values':
                     print('Некорректное значение функции. Попробуйте снова.')
                     continue
@@ -85,6 +90,7 @@ def run():
                 save_data(table_name, result)
                 clear_cache(table_name)
             case 'update':
+                """Обновляет записи в таблице по заданному условию."""
                 if len(args) != 10 or args[2] != 'set' or args[4] != '=' \
                     or args[6] != 'where' or args[8] != '=':
                     print('Некорректное значение функции. Попробуйте снова.')
@@ -102,6 +108,7 @@ def run():
                 save_data(table_name, result)
                 clear_cache(table_name)
             case 'delete_from':
+                """Удаляет записи из таблицы по заданному условию."""
                 if len(args) != 6 or args[2] != 'where' or args[4] != '=':
                     print('Некорректное значение функции. Попробуйте снова.')
                     continue
@@ -116,6 +123,7 @@ def run():
                 save_data(table_name, result)
                 clear_cache(table_name)
             case 'select_from':
+                """Выбирает записи из таблицы по условию или все записи."""
                 if len(args) == 6 and args[2] == 'where' and args[4] == '=':
                     table_name = args[1]
                     if table_name not in data:
@@ -150,10 +158,6 @@ def run():
                     rows = cacher(cache_key, lambda: select(table_data))
                     table = PrettyTable()
                     table.field_names = table_data[0].keys()
-                    """
-                    for row in table_data:
-                        table.add_row(list(row.values()))
-                    """
                     for row in rows:
                             table.add_row(list(row.values()))
                     print(table)
@@ -162,6 +166,7 @@ def run():
                     print('Некорректное значение функции. Попробуйте снова.')
                     continue
             case 'info':
+                """Выводит информацию о структуре таблицы."""
                 if len(args) != 2:
                     print('Некорректное значение: \
                           отсутствует название таблицы. Попробуйте снова.')
@@ -172,8 +177,10 @@ def run():
                 table = PrettyTable(columns)
                 print(table)
             case 'exit':
+                """Завершает выполнение программы."""
                 return
             case 'help':
+                """Выводит справочную информацию."""
                 print_help()
             case 'empty':
                 continue
